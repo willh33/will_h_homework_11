@@ -66,7 +66,7 @@ app.listen(PORT, function() {
 
 /**
  * Retrieve notes from json file, parsing the string as json, returning empty array if there is an error
- * @param {*} callback 
+ * @param {*} callback: returns the result to the callback function when done
  */
 const getNotes = (callback) => {
   fs.readFile(path.join(__dirname, "db/db.json"), 'UTF8', (error, data) => 
@@ -75,7 +75,7 @@ const getNotes = (callback) => {
 
 /**
  * Write to the file then call the callback function
- * @param {*} callback 
+ * @param {*} callback: returns the result to the callback function when done
  */
 const writeNotes = (notes, callback) => {
   fs.writeFile(path.join(__dirname, "db/db.json"), JSON.stringify(notes, null, '\t'), (err) => 
