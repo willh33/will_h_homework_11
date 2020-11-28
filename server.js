@@ -3,6 +3,7 @@
 const express = require("express");
 const path = require("path");
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 
 // Sets up the Express App
 // =============================================================
@@ -12,6 +13,7 @@ const PORT = process.env.PORT || 3001;
 // Sets up the Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static("public"));
 
 // Routes
 // =============================================================
@@ -24,14 +26,9 @@ app.get("/notes", function(req, res) {
 //Routes to interact with the API
 app.get("/api/notes", function(req, res) {
   //Get the notes from db.json and return them
-  fs.readFile(path.join(__dirname, "db/db.json"), 'UTF8', (error, data) =>
-    { 
-      if(error)
-        return res.json(error);
-      else 
-        return res.json(JSON.parse(data));
-    }
-  );
+  getNotes( notes => {
+    return res.json(notes);
+  });
 });
 
 // Create New Note - takes in JSON input
@@ -41,10 +38,13 @@ app.post("/api/notes", function(req, res) {
   var newNote = req.body;
 
   //Assign new note an id, save it to db.json
-  const notes = getNotes();
-  const id = notes[notes.length].id;
-  
-  res.json(newCharacter);
+  getNotes( notes => {
+    const id = uuidv4();
+    newNote.id = id;
+    notes.push(newNote);
+    console.log("just pushed new note", notes);
+    writeNotes(notes, (response) => res.json(response));
+  });
 });
 
 // Create New Note - takes in JSON input
@@ -66,20 +66,30 @@ app.listen(PORT, function() {
   console.log("App listening on PORT " + PORT);
 });
 
-const getNotes = () => {
-  fs.readFile(path.join(__dirname, "db/db.json"), 'UTF8', (error, data) =>
+const getNotes = (callback) => {
+  fs.readFile(path.join(__dirname, "db/db.json"), 'UTF8', async (error, data) =>
     { 
       if(error)
       {
         console.log("error");
         console.error(error)
-        return [];
+        callback([]);
       }
       else 
       {
         console.log("data", data);
-        return JSON.parse(data);
+        return callback(JSON.parse(data));
       }
     }
+  );
+}
+
+/**
+ * Write to the file then call the callback function
+ * @param {*} callback 
+ */
+const writeNotes = (notes, callback) => {
+  fs.writeFile(path.join(__dirname, "db/db.json"), JSON.stringify(notes), (err) => 
+      err ? callback(err) : callback('Success!')
   );
 }
