@@ -1,6 +1,6 @@
 # Unit 11 Express Homework: Note Taker
 
-<a href="https://powerful-falls-32325.herokuapp.com/">Deployed App on Heroku</a>
+<a href="https://powerful-falls-32325.herokuapp.com/" target="_blank">Deployed App on Heroku</a>
 
 <img src="./public/assets/home.png" />
 <img src="./public/assets/notes.png" />
