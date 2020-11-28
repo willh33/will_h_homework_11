@@ -19,7 +19,6 @@ app.use(express.static("public"));
 // =============================================================
 
 app.get("/notes", function(req, res) {
-  console.log("directory is", path.join(__dirname, "public/notes/html"));
   res.sendFile(path.join(__dirname, "public/notes.html"));
 });
 
@@ -37,12 +36,11 @@ app.post("/api/notes", function(req, res) {
   // This works because of our body parsing middleware
   var newNote = req.body;
 
-  //Assign new note an id, save it to db.json
+  //Get the notes, create an id for the new note, append new note, write notes to file
   getNotes( notes => {
     const id = uuidv4();
     newNote.id = id;
     notes.push(newNote);
-    console.log("just pushed new note", notes);
     writeNotes(notes, (response) => res.json(newNote));
   });
 });
@@ -66,22 +64,13 @@ app.listen(PORT, function() {
   console.log("App listening on PORT " + PORT);
 });
 
+/**
+ * Retrieve notes from json file, parsing the string as json, returning empty array if there is an error
+ * @param {*} callback 
+ */
 const getNotes = (callback) => {
-  fs.readFile(path.join(__dirname, "db/db.json"), 'UTF8', async (error, data) =>
-    { 
-      if(error)
-      {
-        console.log("error");
-        console.error(error)
-        callback([]);
-      }
-      else 
-      {
-        console.log("data", data);
-        return callback(JSON.parse(data));
-      }
-    }
-  );
+  fs.readFile(path.join(__dirname, "db/db.json"), 'UTF8', (error, data) => 
+      error? callback([]) : callback(JSON.parse(data)));
 }
 
 /**
