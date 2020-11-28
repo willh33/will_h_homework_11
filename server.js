@@ -34,7 +34,7 @@ app.get("/api/notes", function(req, res) {
 app.post("/api/notes", function(req, res) {
   // req.body hosts is equal to the JSON post sent from the user
   // This works because of our body parsing middleware
-  var newNote = req.body;
+  const newNote = req.body;
 
   //Get the notes, create an id for the new note, append new note, write notes to file
   getNotes( notes => {
