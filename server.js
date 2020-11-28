@@ -43,7 +43,7 @@ app.post("/api/notes", function(req, res) {
     newNote.id = id;
     notes.push(newNote);
     console.log("just pushed new note", notes);
-    writeNotes(notes, (response) => res.json(response));
+    writeNotes(notes, (response) => res.json(newNote));
   });
 });
 
@@ -52,7 +52,7 @@ app.delete("/api/notes/:id", function(req, res) {
   const id = req.params.id;
 
   //Remove note with the id from the list and rewrite to db.json
-
+  getNotes( notes => writeNotes(notes.filter(note => note.id !== id), (response) => res.json(response)));
 });
 
 // Basic route that sends the user first to the AJAX Page
@@ -89,7 +89,7 @@ const getNotes = (callback) => {
  * @param {*} callback 
  */
 const writeNotes = (notes, callback) => {
-  fs.writeFile(path.join(__dirname, "db/db.json"), JSON.stringify(notes), (err) => 
+  fs.writeFile(path.join(__dirname, "db/db.json"), JSON.stringify(notes, null, '\t'), (err) => 
       err ? callback(err) : callback('Success!')
   );
 }
